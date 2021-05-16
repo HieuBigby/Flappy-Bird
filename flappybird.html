@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Flappy Bird</title>
+    </head>
+    <body>
+        <canvas id="fb" width="300px" height="500px" style="border: 1px solid white"></canvas>
+        <script>
+            const cvs = document.getElementById("fb");
+            const ctx = cvs.getContext("2d");
+
+            var pipeWidth = 50;
+            var pipeHeight = 300;
+            var birdSize = 30;
+
+            var bX = 10;
+            var bY = 200;
+            
+            var gap = 100;
+            var constant = pipeHeight + gap;
+            var gravity = 0.1;
+            var speed = 0;
+            var jump = 5;
+
+            var score = 0;
+
+            var pipe = [];
+            pipe[0] = {
+                x: cvs.width,
+                y: Math.floor(Math.random()*pipeHeight) - pipeHeight
+            }
+
+            document.addEventListener("keydown", function(){
+                speed -= jump;
+            });
+
+            function draw(){
+                ctx.fillStyle = "black";
+                ctx.fillRect(0, 0, 300, 500);
+
+                for(var i = 0; i < pipe.length; i++){
+                    ctx.strokeStyle = "white";
+                    ctx.strokeRect(pipe[i].x, pipe[i].y, pipeWidth, pipeHeight);
+                    ctx.strokeRect(pipe[i].x, pipe[i].y + constant, pipeWidth, pipeHeight);
+
+                    pipe[i].x--;
+
+                    if(pipe[i].x == 130){
+                        pipe.push({
+                            x: cvs.width,
+                            y: Math.floor(Math.random()*pipeHeight) - pipeHeight
+                        });
+                    }
+
+                    if(bX + birdSize >= pipe[i].x && bX <= pipe[i].x + pipeWidth
+                    && (bY <= pipe[i].y + pipeHeight || bY + birdSize >= pipe[i].y + constant)
+                    || bY + birdSize >= cvs.height - 100){
+                        location.reload();
+                    }
+
+                    if(pipe[i].x == -40){
+                        score++;
+                    }
+                }
+
+                ctx.fillStyle = "black";
+                ctx.fillRect(0, cvs.height - 100, cvs.width, cvs.height);
+
+                ctx.strokeStyle = "white";
+                ctx.strokeRect(0, cvs.height - 100, cvs.width, cvs.height);
+
+                ctx.fillStyle = "red";
+                ctx.fillRect(bX, bY, birdSize, birdSize);
+
+                speed += gravity;
+                bY += speed;
+
+                ctx.fillStyle = "white";
+                ctx.font = "25px Arial";
+                ctx.fillText("Score: " + score, 10, cvs.height - 20);
+
+                requestAnimationFrame(draw);
+            }
+
+            draw();
+        </script>
+    </body>
+</html>
